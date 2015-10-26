@@ -1,4 +1,4 @@
-rage.run <- function( cmdString , threads=1 , intern=FALSE , tsv=FALSE , lines=FALSE , quiet=FALSE , considerJobs=getOption("considerJobs",TRUE) ){
+cmdRun <- function( cmdString , threads=1 , intern=FALSE , tsv=FALSE , lines=FALSE , quiet=FALSE , considerJobs=getOption("considerJobs",TRUE) ){
 
   numStrings <- length(cmdString)
   numJobs <- max(unlist(lapply(strsplit(cmdString,split="|",fixed=T),length)))
@@ -94,12 +94,12 @@ randomStrings<-function(n=1,len=12){
 
 shead <- function(filenames, n=10){
 	cmdString <- paste("head -n",n,filenames)
-  res <- rage.run(cmdString,lines=TRUE, quiet=TRUE)
+  res <- cmdRun(cmdString,lines=TRUE, quiet=TRUE)
 	dump <- lapply(res,cat,sep="\n")
 }
 stail <- function(filenames, n=10){
 	cmdString <- paste("tail -n",n,filenames)
-  res <- rage.run(cmdString,lines=TRUE, quiet=TRUE)
+  res <- cmdRun(cmdString,lines=TRUE, quiet=TRUE)
 	dump <- lapply(res,cat,sep="\n")
 }
 sless <- function(filename){
@@ -107,7 +107,7 @@ sless <- function(filename){
 }
 scats <- function(filenames, n=10){
 	cmdString <- paste("cat",filenames)
-  res <- rage.run(cmdString,lines=TRUE, quiet=TRUE)
+  res <- cmdRun(cmdString,lines=TRUE, quiet=TRUE)
 	dump <- lapply(res,cat,sep="\n")
 }
 
@@ -115,7 +115,7 @@ scats <- function(filenames, n=10){
 
 filelines <- function( filenames, threads=getOption("threads",1L) , quiet=FALSE){
 	cmdString <- paste("wc -l",filenames,"| awk '{print $1}'")
-	res <- as.numeric( unlist( rage.run( cmdString, threads, intern=TRUE, quiet=quiet ) ) )
+	res <- as.numeric( unlist( cmdRun( cmdString, threads, intern=TRUE, quiet=quiet ) ) )
 	return(res)
 }
 
@@ -124,7 +124,7 @@ gunzip <- function( gzfiles, threads=getOption("threads",1L) ){
 	numfiles<-length(gzfiles)
 	outnames<-removeext(gzfiles)
 	cmdString <- paste("gunzip",gzfiles)
-	res <- rage.run( cmdString , threads )
+	res <- cmdRun( cmdString , threads )
 	return(outnames)
 }
 
@@ -167,7 +167,7 @@ findfiles <- function( path="." , string="" ){
 # filename extraction / manipulation
 getfullpaths <- function( paths ){ # can be replaced with normalizePath
 	cmdString <- paste("readlink -f",paths)
-	res <- rage.run(cmdString, intern=TRUE)
+	res <- cmdRun(cmdString, intern=TRUE)
 	return(res)
 }
 
