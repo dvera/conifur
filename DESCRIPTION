@@ -1,0 +1,10 @@
+Package: conifur
+Type: Package
+Title: my CONvenIence FUnctions for R
+Version: 0.1
+Date: 2015-09-27
+Author: Daniel Vera vera@genomics.fsu.edu
+Maintainer: Daniel Vera <vera@genomics.fsu.edu>
+Description: random convenience functions for R.
+Depends: parallel, tools, gtools, readr
+License: MIT Lisence
