@@ -1,11 +1,15 @@
-**rubber**
---------
-**R** **U**tilities for **B**ed and **BE**dg**R**aphs
+# **conifur**
 
-A suite of tools to process, analyze, and visualize bed and bedGraph data in R.
+CONvenIence FUnctions for R
 
-|        |                                |
-|--------|--------------------------------|
-| author | Daniel Vera                    |
-| email  | vera@genomic.fsu.edu           |
-| docs   | http://dvera.github.com/rubber |
+---
+
+## Summary
+
+A set of convenience functions for R, mostly for interacting with the linux shell.
+
+## Installation
+
+```R
+devtools::install_github("dvera/conifur")
+```
