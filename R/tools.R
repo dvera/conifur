@@ -1,4 +1,20 @@
-cmdRun <- function( cmdString , threads=1 , intern=FALSE , tsv=FALSE , lines=FALSE , quiet=FALSE , considerJobs=getOption("considerJobs",TRUE) ){
+moveFiles <- function( files , path ){
+
+  # add: check if files and path exist
+
+  fullpath=normalizePath(path)
+
+  cmdString <- paste("mv", paste(files,collapse=" "), "path")
+
+  res <- cmdRun(cmdString)
+
+  return(paste0(fullpath,"/",basename(files) ))
+  
+}
+
+
+
+cmdRun <- function( cmdString , threads=1 , intern=FALSE , tsv=FALSE , lines=FALSE , verbose=getOption("verbose",F),considerJobs=getOption("considerJobs",TRUE) ){
 
   numStrings <- length(cmdString)
   numJobs <- max(unlist(lapply(strsplit(cmdString,split="|",fixed=T),length)))
@@ -11,7 +27,7 @@ cmdRun <- function( cmdString , threads=1 , intern=FALSE , tsv=FALSE , lines=FAL
 
   if(threads<2){
     res<-lapply(1:length(cmdString), function(i){
-      if(!quiet){print(cmdString[i])}
+      if(verbose){print(cmdString[i])}
 
       if(intern){
         system(cmdString[i], intern=intern)
@@ -33,7 +49,7 @@ cmdRun <- function( cmdString , threads=1 , intern=FALSE , tsv=FALSE , lines=FAL
   } else{
     res<-mclapply(1:length(cmdString), function(i){
       if( i <= threads ){ Sys.sleep(i/100) }
-      if(!quiet){print(cmdString[i])}
+      if(verbose){print(cmdString[i])}
 
 
       if(intern){
@@ -94,12 +110,12 @@ randomStrings<-function(n=1,len=12){
 
 shead <- function(filenames, n=10){
 	cmdString <- paste("head -n",n,filenames)
-  res <- cmdRun(cmdString,lines=TRUE, quiet=TRUE)
+  res <- cmdRun(cmdString,lines=TRUE)
 	dump <- lapply(res,cat,sep="\n")
 }
 stail <- function(filenames, n=10){
 	cmdString <- paste("tail -n",n,filenames)
-  res <- cmdRun(cmdString,lines=TRUE, quiet=TRUE)
+  res <- cmdRun(cmdString,lines=TRUE)
 	dump <- lapply(res,cat,sep="\n")
 }
 sless <- function(filename){
@@ -107,15 +123,15 @@ sless <- function(filename){
 }
 scats <- function(filenames, n=10){
 	cmdString <- paste("cat",filenames)
-  res <- cmdRun(cmdString,lines=TRUE, quiet=TRUE)
+  res <- cmdRun(cmdString,lines=TRUE)
 	dump <- lapply(res,cat,sep="\n")
 }
 
 
 
-filelines <- function( filenames, threads=getOption("threads",1L) , quiet=FALSE){
+filelines <- function( filenames, threads=getOption("threads",1L) ){
 	cmdString <- paste("wc -l",filenames,"| awk '{print $1}'")
-	res <- as.numeric( unlist( cmdRun( cmdString, threads, intern=TRUE, quiet=quiet ) ) )
+	res <- as.numeric( unlist( cmdRun( cmdString, threads, intern=TRUE ) ) )
 	return(res)
 }
 
@@ -217,7 +233,20 @@ remove.suffix <- function( names,suffix){
 
 tsvRead <- function( tsv, col_names=F , threads=getOption("threads",1L) , progress=FALSE , ... ){
   if( length(tsv) < threads ){ threads <- length(tsv) }
-  tsvs <- mclapply(tsv, read_tsv , col_names=col_names , progress=progress , ... , mc.cores=threads , mc.preschedule=FALSE )
+  tsvs <- tryCatch(
+    {
+      mclapply(tsv, read_tsv , col_names=col_names , progress=progress , ... , mc.cores=threads , mc.preschedule=FALSE )
+    },
+    warning = function(war){
+      x <- mclapply(tsv, read.table , header=col_names , stringsAsFactors=FALSE , sep="\t" , mc.cores=threads , mc.preschedule=FALSE )
+      return(x)
+    },
+    error = function(err){
+      x <- mclapply(tsv, read.table , header=col_names , stringsAsFactors=FALSE , sep="\t" , mc.cores=threads , mc.preschedule=FALSE )
+      return(x)
+    }
+  )
+
   if( length(tsvs)==1 ){ tsvs <- tsvs[[1]] }
   return(tsvs)
 }
