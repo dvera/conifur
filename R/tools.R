@@ -9,7 +9,7 @@ moveFiles <- function( files , path ){
   res <- cmdRun(cmdString)
 
   return(paste0(fullpath,"/",basename(files) ))
-  
+
 }
 
 
@@ -27,7 +27,7 @@ cmdRun <- function( cmdString , threads=1 , intern=FALSE , tsv=FALSE , lines=FAL
 
   if(threads<2){
     res<-lapply(1:length(cmdString), function(i){
-      if(verbose){print(cmdString[i])}
+      if(verbose){cat(cmdString[i],"\n")}
 
       if(intern){
         system(cmdString[i], intern=intern)
@@ -49,7 +49,7 @@ cmdRun <- function( cmdString , threads=1 , intern=FALSE , tsv=FALSE , lines=FAL
   } else{
     res<-mclapply(1:length(cmdString), function(i){
       if( i <= threads ){ Sys.sleep(i/100) }
-      if(verbose){print(cmdString[i])}
+      if(verbose){cat(cmdString[i],"\n")}
 
 
       if(intern){
