@@ -254,7 +254,7 @@ tsvRead <- function( tsv, col_names=F , threads=getOption("threads",1L) , progre
 
 tsvWrite <- function( tsv, file, col_names=FALSE, row_names=FALSE,  ... ){
 	if(row_names){
-    write.table( tsv, file, sep="\t", quote=FALSE, col.names=colnames, row.names=row_names, ... )
+    write.table( tsv, file, sep="\t", quote=FALSE, col.names=col_names, row.names=row_names, ... )
   } else{
     write_tsv(tsv, path=file, col_names=col_names )
   }
