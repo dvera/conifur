@@ -1,3 +1,31 @@
+ll <- function( string="" , human=TRUE , sortBy="name", own=FALSE , lines=FALSE , threads=getOption("threads",1L) ){
+
+  s <- paste0(string,collapse=" ")
+  #print(s)
+
+  if(sortBy=="name"){
+    sortarg = ""
+  } else if(sortBy=="size"){
+    sortarg = "S"
+  } else if(sortBy=="date" | sortBy=="time"){
+    sortarg = "t"
+  }
+
+  sortarg <- paste0("-l",sortarg,if(human){"h"})
+
+  cmdString <- paste("ls",sortarg,"--time-style=long-iso",s,"| grep -v \"total \" | awk '{print $5,$3,$4,$6,$7,$1,$8}'")
+  #print(cmdString)
+  dfp=read.delim(pipe(cmdString),sep=" ")
+  colnames(dfp)=c("size","user","group","date","time","perms","name")
+  if(!own){dfp$user=NULL ; dfp$group=NULL ; dfp$perms=NULL}
+  #if(lines){ dfp$lines <- filelines()}
+
+  print.data.frame(dfp,right=F,row.names=F,col.names=F)
+}
+
+
+
+
 moveFiles <- function( files , path ){
 
   # add: check if files and path exist
