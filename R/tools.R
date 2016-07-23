@@ -42,7 +42,7 @@ moveFiles <- function( files , path ){
 
 
 
-cmdRun <- function( cmdString , threads=1 , intern=FALSE , tsv=FALSE , lines=FALSE , verbose=getOption("verbose",F),considerJobs=getOption("considerJobs",TRUE) ){
+cmdRun <- function( cmdString , threads=1 , intern=FALSE , tsv=FALSE , lines=FALSE , first=-1L , verbose=getOption("verbose",F),considerJobs=getOption("considerJobs",TRUE) ){
 
   numStrings <- length(cmdString)
   numJobs <- max(unlist(lapply(strsplit(cmdString,split="|",fixed=T),length)))
@@ -61,12 +61,12 @@ cmdRun <- function( cmdString , threads=1 , intern=FALSE , tsv=FALSE , lines=FAL
         system(cmdString[i], intern=intern)
       } else if(tsv){
         cmdString.call <- pipe(cmdString[i],open="r")
-        result <- read.delim(cmdString.call, header=FALSE, stringsAsFactors=FALSE)
+        result <- read.delim(cmdString.call, header=FALSE, stringsAsFactors=FALSE, nrows=first)
         close(cmdString.call)
         return(result)
       } else if(lines){
         cmdString.call <- pipe(cmdString[i],open="r")
-        result <- readLines(cmdString.call)
+        result <- readLines(cmdString.call,n=first)
         close(cmdString.call)
         return(result)
       } else{
@@ -84,12 +84,12 @@ cmdRun <- function( cmdString , threads=1 , intern=FALSE , tsv=FALSE , lines=FAL
         system(cmdString[i], intern=intern)
       } else if(tsv){
         cmdString.call <- pipe(cmdString[i],open="r")
-        result <- read.delim(cmdString.call, header=FALSE, stringsAsFactors=FALSE)
+        result <- read.delim(cmdString.call, header=FALSE, stringsAsFactors=FALSE, nrows=first)
         close(cmdString.call)
         return(result)
       } else if(lines){
         cmdString.call <- pipe(cmdString[i],open="r")
-        result <- readLines(cmdString.call)
+        result <- readLines(cmdString.call,n=first)
         close(cmdString.call)
         return(result)
       } else{
