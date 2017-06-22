@@ -274,8 +274,10 @@ tsvRead <- function( tsv, col_names=F , threads=getOption("threads",1L) , progre
       return(x)
     }
   )
-
-  if( length(tsvs)==1 ){ tsvs <- tsvs[[1]] }
+  tsvs <- mclapply( tsvs, as.data.frame, mc.cores=threads, mc.preschedule=FALSE )
+  if( length(tsvs)==1 ){
+    tsvs <- tsvs[[1]]
+  }
   return(tsvs)
 }
 
